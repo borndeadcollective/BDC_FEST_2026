@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Festival BDC 2026 — Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #f5f5f5;
+    --surface: #ffffff;
+    --surface2: #f9f9f9;
+    --border: #e0e0e0;
+    --border2: #ccc;
+    --accent: #1a1a1a;
+    --accent2: #e8ff00;
+    --red: #d32f2f;
+    --green: #2e7d32;
+    --green-light: #e8f5e9;
+    --red-light: #ffebee;
+    --blue: #1565c0;
+    --blue-light: #e3f2fd;
+    --muted: #999;
+    --text: #1a1a1a;
+    --text-dim: #777;
+    --yellow: #f9a825;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Mono', monospace; font-size: 12px; min-height: 100vh; padding: 20px; }
+
+  /* HEADER */
+  header { background: var(--accent); color: #fff; padding: 20px 24px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+  header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 4px; color: var(--accent2); line-height: 1; }
+  header p { color: #aaa; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+  .header-right { text-align: right; font-size: 10px; color: #aaa; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 2px solid var(--border2); }
+  .tab { padding: 10px 20px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; background: none; border: none; color: var(--text-dim); border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); font-weight: 700; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  @media(max-width:600px) { .kpi-grid { grid-template-columns: 1fr 1fr; } }
+  .card { background: var(--surface); border: 1px solid var(--border); padding: 16px; }
+  .card-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .card-value { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; line-height: 1; }
+  .card-sub { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+  .green { color: var(--green); } .red { color: var(--red); } .blue { color: var(--blue); }
+
+  /* SECTION */
+  .section { margin-bottom: 24px; }
+  .section-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+
+  /* TICKET GRID */
+  .ticket-grid { background: var(--surface); border: 1px solid var(--border); }
+  .ticket-row { display: grid; grid-template-columns: 2fr 70px 70px 90px 90px 90px; align-items: center; border-bottom: 1px solid var(--border); padding: 8px 12px; gap: 8px; }
+  @media(max-width:600px) { .ticket-row { grid-template-columns: 1.5fr 60px 60px 70px 70px 70px; font-size:10px; padding: 6px 8px; } }
+  .ticket-row.header { background: var(--surface2); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
+  .ticket-row.total-r { background: var(--surface2); font-weight: 700; }
+  .t-input { background: #fff; border: 1px solid var(--border2); color: var(--blue); font-family: 'Space Mono', monospace; font-size: 12px; padding: 4px 6px; width: 100%; text-align: right; }
+  .t-input:focus { outline: 2px solid var(--blue); }
+  .right { text-align: right; }
+
+  /* DEPENSE GRID */
+  .dep-grid { background: var(--surface); border: 1px solid var(--border); }
+  .dep-row { display: grid; grid-template-columns: 2fr 110px 110px; align-items: center; border-bottom: 1px solid var(--border); padding: 8px 12px; gap: 8px; }
+  @media(max-width:600px) { .dep-row { grid-template-columns: 1.5fr 90px 90px; font-size:10px; } }
+  .dep-row.header { background: var(--surface2); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
+  .dep-row.total-r { background: var(--surface2); font-weight: 700; }
+  .d-input { background: #fff; border: 1px solid var(--border2); color: var(--text); font-family: 'Space Mono', monospace; font-size: 12px; padding: 4px 6px; width: 100%; text-align: right; }
+  .d-input:focus { outline: 2px solid var(--accent); }
+
+  /* TAGS */
+  .tag { display: inline-block; font-size: 9px; padding: 1px 5px; letter-spacing: 1px; margin-left: 4px; }
+  .tag-paris { background: var(--blue-light); color: var(--blue); }
+  .tag-ok { background: var(--green-light); color: var(--green); }
+  .tag-acompte { background: #fff3e0; color: var(--yellow); }
+
+  /* PARAMS */
+  .params-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:600px) { .params-grid { grid-template-columns: 1fr; } }
+  .param-section { background: var(--surface); border: 1px solid var(--border); padding: 16px; }
+  .param-section h3 { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  .param-row { display: grid; grid-template-columns: 1fr 100px; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .param-label { font-size: 11px; color: var(--text); }
+  .param-input { background: #fff; border: 1px solid var(--border2); font-family: 'Space Mono', monospace; font-size: 12px; padding: 5px 8px; width: 100%; text-align: right; }
+  .param-input:focus { outline: 2px solid var(--accent); }
+  .param-input.text-input { text-align: left; }
+  .btn { background: var(--accent); color: #fff; border: none; padding: 10px 20px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; margin-top: 12px; width: 100%; }
+  .btn:hover { background: #333; }
+  .btn-danger { background: var(--red); }
+  .btn-small { padding: 6px 12px; font-size: 10px; margin-top: 0; width: auto; }
+
+  /* GROUPE PARAMS */
+  .groupe-param-row { display: grid; grid-template-columns: 1.5fr 90px 90px 80px; gap: 8px; align-items: center; border-bottom: 1px solid var(--border); padding: 6px 0; font-size: 11px; }
+  .groupe-param-row.header { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
+  .g-input { background: #fff; border: 1px solid var(--border2); font-family: 'Space Mono', monospace; font-size: 11px; padding: 4px 6px; width: 100%; }
+  .g-input.right { text-align: right; }
+  select.g-input { cursor: pointer; }
+
+  /* CHART */
+  .chart-box { background: var(--surface); border: 1px solid var(--border); padding: 20px; }
+  canvas { display: block; width: 100% !important; }
+
+  /* DISTRIB */
+  .distrib-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  @media(max-width:600px) { .distrib-grid { grid-template-columns: 1fr; } }
+  .distrib-card { background: var(--surface); border: 1px solid var(--border); padding: 14px; }
+  .distrib-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .distrib-val { font-family: 'Bebas Neue', sans-serif; font-size: 26px; }
+  .d-bar-wrap { height: 6px; background: var(--border); margin: 6px 0; }
+  .d-bar { height: 100%; transition: width 0.3s; }
+  .d-nums { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); }
+
+  /* BILAN */
+  .bilan-box { background: var(--accent); color: #fff; padding: 20px 24px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; margin-bottom: 16px; }
+  @media(max-width:600px) { .bilan-box { grid-template-columns: 1fr 1fr; } }
+  .bilan-item .b-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #aaa; margin-bottom: 6px; }
+  .bilan-item .b-val { font-family: 'Bebas Neue', sans-serif; font-size: 26px; }
+
+  .note { font-size: 10px; color: var(--text-dim); border-left: 3px solid var(--border2); padding-left: 12px; margin-top: 8px; line-height: 1.7; }
+  .acompte-note { font-size: 10px; color: var(--yellow); background: #fff8e1; border-left: 3px solid var(--yellow); padding: 8px 12px; margin-bottom: 10px; }
+  .saved-note { font-size: 10px; color: var(--green); margin-top: 8px; display: none; }
+
+  /* Add groupe form */
+  .add-row { display: grid; grid-template-columns: 1.5fr 90px 90px 80px 60px; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--border); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Festival BDC 2026</h1>
+    <p id="header-sub">Le Chinois, Montreuil — 12 & 13 septembre 2026</p>
+  </div>
+  <div class="header-right">
+    <div id="header-cap">Capacité : 270 | En vente : 280</div>
+    <div style="margin-top:4px" id="header-total">Total dépenses : —</div>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('ventes')">📊 Ventes & Bilan</button>
+  <button class="tab" onclick="showTab('depenses')">💸 Dépenses</button>
+  <button class="tab" onclick="showTab('parametres')">⚙️ Paramètres</button>
+</div>
+
+<!-- ===== TAB VENTES ===== -->
+<div class="tab-content active" id="tab-ventes">
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="card">
+      <div class="card-label">Recettes brutes</div>
+      <div class="card-value green" id="kpi-recettes">0 €</div>
+      <div class="card-sub" id="kpi-recettes-sub">0 billet(s) vendus</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Total dépenses estimées</div>
+      <div class="card-value red" id="kpi-depenses">0 €</div>
+      <div class="card-sub">Groupes + frais fixes</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Résultat net</div>
+      <div class="card-value" id="kpi-net">0 €</div>
+      <div class="card-sub" id="kpi-net-sub">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Seuil de rentabilité</div>
+      <div class="card-value" id="kpi-seuil">0 €</div>
+      <div class="card-sub" id="kpi-seuil-sub">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Remplissage nécessaire</div>
+      <div class="card-value" id="kpi-remplissage">—</div>
+      <div class="card-sub" id="kpi-remplissage-sub">Sur pass WE disponibles</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Acompte déjà versé</div>
+      <div class="card-value" style="color:var(--yellow)" id="kpi-acompte">500 €</div>
+      <div class="card-sub">Wits End + TS Warspite</div>
+    </div>
+  </div>
+
+  <!-- BILLETTERIE -->
+  <div class="section">
+    <div class="section-title">Billetterie — Saisie des ventes</div>
+    <div class="ticket-grid">
+      <div class="ticket-row header">
+        <div>Type</div><div class="right">Prix</div><div class="right">Dispo</div>
+        <div class="right">Prévente</div><div class="right">Porte</div><div class="right">Recette</div>
+      </div>
+      <div class="ticket-row">
+        <div>Pass week-end</div>
+        <div class="right" id="t-prix-we">60 €</div>
+        <div class="right" id="t-dispo-we">280</div>
+        <div class="right"><input class="t-input" type="number" id="we-prevente" value="30" min="0" oninput="recalc()"></div>
+        <div class="right"><input class="t-input" type="number" id="we-porte" value="0" min="0" oninput="recalc()"></div>
+        <div class="right green" id="we-total">0 €</div>
+      </div>
+      <div class="ticket-row">
+        <div>Journée samedi</div>
+        <div class="right" id="t-prix-sam">35 €</div>
+        <div class="right" id="t-dispo-sam">100</div>
+        <div class="right"><input class="t-input" type="number" id="sam-prevente" value="0" min="0" oninput="recalc()"></div>
+        <div class="right"><input class="t-input" type="number" id="sam-porte" value="0" min="0" oninput="recalc()"></div>
+        <div class="right green" id="sam-total">0 €</div>
+      </div>
+      <div class="ticket-row">
+        <div>Journée dimanche</div>
+        <div class="right" id="t-prix-dim">35 €</div>
+        <div class="right" id="t-dispo-dim">100</div>
+        <div class="right"><input class="t-input" type="number" id="dim-prevente" value="0" min="0" oninput="recalc()"></div>
+        <div class="right"><input class="t-input" type="number" id="dim-porte" value="0" min="0" oninput="recalc()"></div>
+        <div class="right green" id="dim-total">0 €</div>
+      </div>
+      <div class="ticket-row total-r">
+        <div>TOTAL</div><div></div><div></div><div></div><div></div>
+        <div class="right green" id="total-recettes">0 €</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISTRIB -->
+  <div class="section">
+    <div class="section-title">Répartition des billets</div>
+    <div class="distrib-grid">
+      <div class="distrib-card">
+        <div class="distrib-label">Pass week-end</div>
+        <div class="distrib-val green" id="d-we-val">0</div>
+        <div class="d-bar-wrap"><div class="d-bar" id="d-we-bar" style="background:var(--green);width:0%"></div></div>
+        <div class="d-nums"><span id="d-we-pct">0%</span><span id="d-we-max">max 280</span></div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:6px" id="d-we-rec">0 €</div>
+      </div>
+      <div class="distrib-card">
+        <div class="distrib-label">Journée samedi</div>
+        <div class="distrib-val blue" id="d-sam-val">0</div>
+        <div class="d-bar-wrap"><div class="d-bar" id="d-sam-bar" style="background:var(--blue);width:0%"></div></div>
+        <div class="d-nums"><span id="d-sam-pct">0%</span><span id="d-sam-max">max 100</span></div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:6px" id="d-sam-rec">0 €</div>
+      </div>
+      <div class="distrib-card">
+        <div class="distrib-label">Journée dimanche</div>
+        <div class="distrib-val" style="color:var(--yellow)" id="d-dim-val">0</div>
+        <div class="d-bar-wrap"><div class="d-bar" id="d-dim-bar" style="background:var(--yellow);width:0%"></div></div>
+        <div class="d-nums"><span id="d-dim-pct">0%</span><span id="d-dim-max">max 100</span></div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:6px" id="d-dim-rec">0 €</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="section">
+    <div class="section-title">Courbe de rentabilité — Pass week-end</div>
+    <div class="chart-box">
+      <canvas id="breakeven-chart" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- BILAN -->
+  <div class="section">
+    <div class="section-title">Bilan global</div>
+    <div class="bilan-box">
+      <div class="bilan-item"><div class="b-label">Recettes</div><div class="b-val green" id="b-recettes">0 €</div></div>
+      <div class="bilan-item"><div class="b-label">Dépenses estimées</div><div class="b-val red" id="b-depenses">0 €</div></div>
+      <div class="bilan-item"><div class="b-label">Résultat net</div><div class="b-val" id="b-net">0 €</div></div>
+      <div class="bilan-item"><div class="b-label">Dépenses réelles</div><div class="b-val red" id="b-reel">0 €</div></div>
+    </div>
+    <div class="note" id="bilan-note">Les groupes parisiens sont à 0€ pour l'instant. Un bonus post-fest sera calculé à part.</div>
+  </div>
+</div>
+
+<!-- ===== TAB DEPENSES ===== -->
+<div class="tab-content" id="tab-depenses">
+  <div class="section">
+    <div class="section-title">Groupes</div>
+    <div class="acompte-note" id="acompte-display">⚡ Acompte déjà versé : 500 € (Wits End + TS Warspite — PayPal)</div>
+    <div class="dep-grid">
+      <div class="dep-row header"><div>Groupe</div><div class="right">Budget estimé</div><div class="right">Réel payé</div></div>
+      <div id="groupes-list"></div>
+      <div class="dep-row total-r">
+        <div>Total groupes</div>
+        <div class="right red" id="total-g-estime">0 €</div>
+        <div class="right red" id="total-g-reel">0 €</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Frais fixes</div>
+    <div class="dep-grid">
+      <div class="dep-row header"><div>Poste</div><div class="right">Budget estimé</div><div class="right">Réel payé</div></div>
+      <div id="frais-list"></div>
+      <div class="dep-row total-r">
+        <div>Total frais fixes</div>
+        <div class="right red" id="total-f-estime">0 €</div>
+        <div class="right red" id="total-f-reel">0 €</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB PARAMETRES ===== -->
+<div class="tab-content" id="tab-parametres">
+  <div class="params-grid">
+
+    <!-- Infos générales -->
+    <div class="param-section">
+      <h3>Infos générales</h3>
+      <div class="param-row"><span class="param-label">Nom du festival</span><input class="param-input text-input" id="p-nom" value="Festival BDC 2026"></div>
+      <div class="param-row"><span class="param-label">Salle</span><input class="param-input text-input" id="p-salle" value="Le Chinois, Montreuil"></div>
+      <div class="param-row"><span class="param-label">Date</span><input class="param-input text-input" id="p-date" value="12 & 13 septembre 2026"></div>
+      <div class="param-row"><span class="param-label">Capacité salle</span><input class="param-input" id="p-capacite" type="number" value="270"></div>
+    </div>
+
+    <!-- Billetterie -->
+    <div class="param-section">
+      <h3>Billetterie</h3>
+      <div class="param-row"><span class="param-label">Pass WE — dispo</span><input class="param-input" id="p-we-dispo" type="number" value="280"></div>
+      <div class="param-row"><span class="param-label">Pass WE — prix</span><input class="param-input" id="p-we-prix" type="number" value="60"></div>
+      <div class="param-row"><span class="param-label">Journée samedi — dispo</span><input class="param-input" id="p-sam-dispo" type="number" value="100"></div>
+      <div class="param-row"><span class="param-label">Journée samedi — prix</span><input class="param-input" id="p-sam-prix" type="number" value="35"></div>
+      <div class="param-row"><span class="param-label">Journée dimanche — dispo</span><input class="param-input" id="p-dim-dispo" type="number" value="100"></div>
+      <div class="param-row"><span class="param-label">Journée dimanche — prix</span><input class="param-input" id="p-dim-prix" type="number" value="35"></div>
+    </div>
+
+    <!-- Frais fixes -->
+    <div class="param-section">
+      <h3>Frais fixes</h3>
+      <div id="frais-params"></div>
+      <button class="btn btn-small" style="margin-top:10px" onclick="addFrais()">+ Ajouter un poste</button>
+    </div>
+
+    <!-- Acompte -->
+    <div class="param-section">
+      <h3>Acompte versé</h3>
+      <div class="param-row"><span class="param-label">Montant acompte</span><input class="param-input" id="p-acompte" type="number" value="500"></div>
+      <div class="param-row"><span class="param-label">Description</span><input class="param-input text-input" id="p-acompte-desc" value="Wits End + TS Warspite — PayPal"></div>
+    </div>
+
+  </div>
+
+  <!-- Groupes params -->
+  <div class="param-section" style="margin-top:16px">
+    <h3>Groupes — modifier les budgets</h3>
+    <div class="groupe-param-row header">
+      <div>Nom</div><div>Estimé (€)</div><div>Réel (€)</div><div>Type</div>
+    </div>
+    <div id="groupes-params"></div>
+    <div class="add-row">
+      <input class="g-input text-input" id="new-g-nom" placeholder="Nouveau groupe">
+      <input class="g-input right" id="new-g-estime" type="number" placeholder="Estimé">
+      <input class="g-input right" id="new-g-reel" type="number" placeholder="Réel">
+      <select class="g-input" id="new-g-type">
+        <option value="normal">Déplacement</option>
+        <option value="paris">Paris</option>
+      </select>
+      <button class="btn btn-small" onclick="addGroupe()">+</button>
+    </div>
+  </div>
+
+  <button class="btn" onclick="applyParams()" style="margin-top:16px">✓ Appliquer les changements</button>
+  <div class="saved-note" id="saved-note">✓ Modifications appliquées !</div>
+</div>
+
+<script>
+// ===== STATE =====
+let state = {
+  nom: "Festival BDC 2026",
+  salle: "Le Chinois, Montreuil",
+  date: "12 & 13 septembre 2026",
+  capacite: 270,
+  we: { dispo: 280, prix: 60 },
+  sam: { dispo: 100, prix: 35 },
+  dim: { dispo: 100, prix: 35 },
+  acompte: 500,
+  acompte_desc: "Wits End + TS Warspite — PayPal",
+  groupes: [
+    { name: "Bulldoze", estime: 3000, reel: null, type: "normal" },
+    { name: "Wits End + TS Warspite", estime: 1045, reel: 1045, type: "normal" },
+    { name: "The Flex", estime: 1000, reel: 1000, type: "normal" },
+    { name: "Headbussa", estime: 800, reel: null, type: "normal" },
+    { name: "Fools Die", estime: 800, reel: 800, type: "normal" },
+    { name: "Bulls Shitt", estime: 900, reel: null, type: "normal" },
+    { name: "Imposter", estime: 600, reel: 465, type: "normal" },
+    { name: "Profanation", estime: 400, reel: null, type: "normal" },
+    { name: "Loyal 2 None", estime: 300, reel: null, type: "normal" },
+    { name: "Premonition", estime: 250, reel: null, type: "normal" },
+    { name: "Escape", estime: 200, reel: null, type: "normal" },
+    { name: "Hard to Handle", estime: 0, reel: 0, type: "paris" },
+    { name: "Cold Decay", estime: 0, reel: 0, type: "paris" },
+    { name: "Take it in Blood", estime: 0, reel: 0, type: "paris" },
+    { name: "Soul Hater", estime: 0, reel: 0, type: "paris" },
+    { name: "Corruption Pact", estime: 0, reel: 0, type: "paris" },
+    { name: "Mozdrill", estime: 0, reel: 0, type: "paris" },
+    { name: "Severed", estime: 0, reel: 0, type: "paris" },
+    { name: "Worst Doubt", estime: 0, reel: 0, type: "paris" },
+  ],
+  frais: [
+    { name: "Location salle (2 jours)", estime: 300, reel: 300 },
+    { name: "Catering (2 jours)", estime: 650, reel: null },
+    { name: "Hébergements", estime: 500, reel: null },
+    { name: "Frais annexes", estime: 150, reel: null },
+  ]
+};
+
+// ===== TABS =====
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'parametres') buildParams();
+  if (id === 'depenses') buildDepenses();
+}
+
+// ===== BUILD DEPENSES =====
+function buildDepenses() {
+  const gl = document.getElementById('groupes-list');
+  gl.innerHTML = '';
+  state.groupes.forEach((g, i) => {
+    const row = document.createElement('div');
+    row.className = 'dep-row';
+    const reelVal = g.reel !== null ? g.reel : '';
+    row.innerHTML = `
+      <div>${g.name}${g.type==='paris'?'<span class="tag tag-paris">Paris</span>':''}${g.reel!==null?'<span class="tag tag-ok">✓</span>':''}</div>
+      <div class="right" style="color:var(--text-dim)">${g.estime>0?g.estime+' €':'—'}</div>
+      <div class="right"><input class="d-input" type="number" id="g-reel-${i}" value="${reelVal}" placeholder="—" min="0" oninput="saveReel('g',${i},this.value);recalc()"></div>
+    `;
+    gl.appendChild(row);
+  });
+
+  const fl = document.getElementById('frais-list');
+  fl.innerHTML = '';
+  state.frais.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'dep-row';
+    const reelVal = f.reel !== null ? f.reel : '';
+    row.innerHTML = `
+      <div>${f.name}</div>
+      <div class="right" style="color:var(--text-dim)">${f.estime} €</div>
+      <div class="right"><input class="d-input" type="number" id="f-reel-${i}" value="${reelVal}" placeholder="—" min="0" oninput="saveReel('f',${i},this.value);recalc()"></div>
+    `;
+    fl.appendChild(row);
+  });
+
+  document.getElementById('acompte-display').textContent = `⚡ Acompte déjà versé : ${state.acompte} € (${state.acompte_desc})`;
+  recalc();
+}
+
+function saveReel(type, i, val) {
+  const v = val === '' ? null : parseInt(val) || 0;
+  if (type === 'g') state.groupes[i].reel = v;
+  else state.frais[i].reel = v;
+}
+
+// ===== BUILD PARAMS =====
+function buildParams() {
+  document.getElementById('p-nom').value = state.nom;
+  document.getElementById('p-salle').value = state.salle;
+  document.getElementById('p-date').value = state.date;
+  document.getElementById('p-capacite').value = state.capacite;
+  document.getElementById('p-we-dispo').value = state.we.dispo;
+  document.getElementById('p-we-prix').value = state.we.prix;
+  document.getElementById('p-sam-dispo').value = state.sam.dispo;
+  document.getElementById('p-sam-prix').value = state.sam.prix;
+  document.getElementById('p-dim-dispo').value = state.dim.dispo;
+  document.getElementById('p-dim-prix').value = state.dim.prix;
+  document.getElementById('p-acompte').value = state.acompte;
+  document.getElementById('p-acompte-desc').value = state.acompte_desc;
+
+  // Frais params
+  const fp = document.getElementById('frais-params');
+  fp.innerHTML = '';
+  state.frais.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:grid;grid-template-columns:1fr 80px 30px;gap:6px;align-items:center;margin-bottom:6px;';
+    row.innerHTML = `
+      <input class="param-input text-input" id="fp-nom-${i}" value="${f.name}" style="font-size:10px;padding:4px 6px;">
+      <input class="param-input" id="fp-estime-${i}" type="number" value="${f.estime}">
+      <button onclick="removeFrais(${i})" style="background:var(--red);color:#fff;border:none;cursor:pointer;font-size:12px;padding:4px;">✕</button>
+    `;
+    fp.appendChild(row);
+  });
+
+  // Groupes params
+  const gp = document.getElementById('groupes-params');
+  gp.innerHTML = '';
+  state.groupes.forEach((g, i) => {
+    const row = document.createElement('div');
+    row.className = 'groupe-param-row';
+    row.innerHTML = `
+      <input class="g-input text-input" id="gp-nom-${i}" value="${g.name}" style="font-size:10px;">
+      <input class="g-input right" id="gp-estime-${i}" type="number" value="${g.estime}">
+      <input class="g-input right" id="gp-reel-${i}" type="number" value="${g.reel !== null ? g.reel : ''}" placeholder="—">
+      <select class="g-input" id="gp-type-${i}">
+        <option value="normal" ${g.type==='normal'?'selected':''}>Déplacement</option>
+        <option value="paris" ${g.type==='paris'?'selected':''}>Paris</option>
+      </select>
+    `;
+    gp.appendChild(row);
+  });
+}
+
+function applyParams() {
+  state.nom = document.getElementById('p-nom').value;
+  state.salle = document.getElementById('p-salle').value;
+  state.date = document.getElementById('p-date').value;
+  state.capacite = parseInt(document.getElementById('p-capacite').value) || 270;
+  state.we.dispo = parseInt(document.getElementById('p-we-dispo').value) || 280;
+  state.we.prix = parseInt(document.getElementById('p-we-prix').value) || 60;
+  state.sam.dispo = parseInt(document.getElementById('p-sam-dispo').value) || 100;
+  state.sam.prix = parseInt(document.getElementById('p-sam-prix').value) || 35;
+  state.dim.dispo = parseInt(document.getElementById('p-dim-dispo').value) || 100;
+  state.dim.prix = parseInt(document.getElementById('p-dim-prix').value) || 35;
+  state.acompte = parseInt(document.getElementById('p-acompte').value) || 0;
+  state.acompte_desc = document.getElementById('p-acompte-desc').value;
+
+  // Frais
+  state.frais.forEach((f, i) => {
+    const nomEl = document.getElementById(`fp-nom-${i}`);
+    const estEl = document.getElementById(`fp-estime-${i}`);
+    if (nomEl) f.name = nomEl.value;
+    if (estEl) f.estime = parseInt(estEl.value) || 0;
+  });
+
+  // Groupes
+  state.groupes.forEach((g, i) => {
+    const nomEl = document.getElementById(`gp-nom-${i}`);
+    const estEl = document.getElementById(`gp-estime-${i}`);
+    const reelEl = document.getElementById(`gp-reel-${i}`);
+    const typeEl = document.getElementById(`gp-type-${i}`);
+    if (nomEl) g.name = nomEl.value;
+    if (estEl) g.estime = parseInt(estEl.value) || 0;
+    if (reelEl) g.reel = reelEl.value === '' ? null : parseInt(reelEl.value) || 0;
+    if (typeEl) g.type = typeEl.value;
+  });
+
+  // Update header & ticket display
+  document.getElementById('header-sub').textContent = `${state.salle} — ${state.date}`;
+  document.getElementById('header-cap').textContent = `Capacité : ${state.capacite} | En vente : ${state.we.dispo}`;
+  document.getElementById('t-prix-we').textContent = state.we.prix + ' €';
+  document.getElementById('t-dispo-we').textContent = state.we.dispo;
+  document.getElementById('t-prix-sam').textContent = state.sam.prix + ' €';
+  document.getElementById('t-dispo-sam').textContent = state.sam.dispo;
+  document.getElementById('t-prix-dim').textContent = state.dim.prix + ' €';
+  document.getElementById('t-dispo-dim').textContent = state.dim.dispo;
+  document.getElementById('d-we-max').textContent = 'max ' + state.we.dispo;
+  document.getElementById('d-sam-max').textContent = 'max ' + state.sam.dispo;
+  document.getElementById('d-dim-max').textContent = 'max ' + state.dim.dispo;
+
+  recalc();
+  const note = document.getElementById('saved-note');
+  note.style.display = 'block';
+  setTimeout(() => note.style.display = 'none', 3000);
+}
+
+function addGroupe() {
+  const nom = document.getElementById('new-g-nom').value.trim();
+  if (!nom) return;
+  const estime = parseInt(document.getElementById('new-g-estime').value) || 0;
+  const reel = document.getElementById('new-g-reel').value === '' ? null : parseInt(document.getElementById('new-g-reel').value) || 0;
+  const type = document.getElementById('new-g-type').value;
+  state.groupes.push({ name: nom, estime, reel, type });
+  document.getElementById('new-g-nom').value = '';
+  document.getElementById('new-g-estime').value = '';
+  document.getElementById('new-g-reel').value = '';
+  buildParams();
+  recalc();
+}
+
+function addFrais() {
+  state.frais.push({ name: 'Nouveau poste', estime: 0, reel: null });
+  buildParams();
+}
+
+function removeFrais(i) {
+  state.frais.splice(i, 1);
+  buildParams();
+  recalc();
+}
+
+// ===== RECALC =====
+function fmt(n) { return n.toLocaleString('fr-FR') + ' €'; }
+
+function recalc() {
+  const wePrev = parseInt(document.getElementById('we-prevente').value) || 0;
+  const wePorte = parseInt(document.getElementById('we-porte').value) || 0;
+  const samPrev = parseInt(document.getElementById('sam-prevente').value) || 0;
+  const samPorte = parseInt(document.getElementById('sam-porte').value) || 0;
+  const dimPrev = parseInt(document.getElementById('dim-prevente').value) || 0;
+  const dimPorte = parseInt(document.getElementById('dim-porte').value) || 0;
+
+  const weSold = wePrev + wePorte;
+  const samSold = samPrev + samPorte;
+  const dimSold = dimPrev + dimPorte;
+
+  const weTotal = weSold * state.we.prix;
+  const samTotal = samSold * state.sam.prix;
+  const dimTotal = dimSold * state.dim.prix;
+  const totalRecettes = weTotal + samTotal + dimTotal;
+
+  document.getElementById('we-total').textContent = fmt(weTotal);
+  document.getElementById('sam-total').textContent = fmt(samTotal);
+  document.getElementById('dim-total').textContent = fmt(dimTotal);
+  document.getElementById('total-recettes').textContent = fmt(totalRecettes);
+
+  // Distrib
+  document.getElementById('d-we-val').textContent = weSold;
+  document.getElementById('d-we-pct').textContent = Math.round(weSold/state.we.dispo*100) + '%';
+  document.getElementById('d-we-bar').style.width = Math.min(100, weSold/state.we.dispo*100) + '%';
+  document.getElementById('d-we-rec').textContent = fmt(weTotal);
+  document.getElementById('d-sam-val').textContent = samSold;
+  document.getElementById('d-sam-pct').textContent = Math.round(samSold/state.sam.dispo*100) + '%';
+  document.getElementById('d-sam-bar').style.width = Math.min(100, samSold/state.sam.dispo*100) + '%';
+  document.getElementById('d-sam-rec').textContent = fmt(samTotal);
+  document.getElementById('d-dim-val').textContent = dimSold;
+  document.getElementById('d-dim-pct').textContent = Math.round(dimSold/state.dim.dispo*100) + '%';
+  document.getElementById('d-dim-bar').style.width = Math.min(100, dimSold/state.dim.dispo*100) + '%';
+  document.getElementById('d-dim-rec').textContent = fmt(dimTotal);
+
+  // Dépenses
+  const totalGEstime = state.groupes.reduce((s, g) => s + g.estime, 0);
+  let totalGReel = 0;
+  state.groupes.forEach((g, i) => {
+    const el = document.getElementById(`g-reel-${i}`);
+    const v = el ? el.value : '';
+    totalGReel += v !== '' ? (parseInt(v)||0) : (g.reel !== null ? g.reel : g.estime);
+  });
+
+  const totalFEstime = state.frais.reduce((s, f) => s + f.estime, 0);
+  let totalFReel = 0;
+  state.frais.forEach((f, i) => {
+    const el = document.getElementById(`f-reel-${i}`);
+    const v = el ? el.value : '';
+    totalFReel += v !== '' ? (parseInt(v)||0) : (f.reel !== null ? f.reel : f.estime);
+  });
+
+  const totalEstime = totalGEstime + totalFEstime;
+  const totalReel = totalGReel + totalFReel;
+  const net = totalRecettes - totalEstime;
+
+  if (document.getElementById('total-g-estime')) {
+    document.getElementById('total-g-estime').textContent = fmt(totalGEstime);
+    document.getElementById('total-g-reel').textContent = fmt(totalGReel);
+    document.getElementById('total-f-estime').textContent = fmt(totalFEstime);
+    document.getElementById('total-f-reel').textContent = fmt(totalFReel);
+  }
+
+  // KPIs
+  document.getElementById('kpi-recettes').textContent = fmt(totalRecettes);
+  document.getElementById('kpi-recettes-sub').textContent = (weSold+samSold+dimSold) + ' billet(s) vendus';
+  document.getElementById('kpi-depenses').textContent = fmt(totalEstime);
+  document.getElementById('kpi-acompte').textContent = fmt(state.acompte);
+
+  const netEl = document.getElementById('kpi-net');
+  netEl.textContent = fmt(net);
+  netEl.className = 'card-value ' + (net >= 0 ? 'green' : 'red');
+  document.getElementById('kpi-net-sub').textContent = net >= 0 ? '✓ Bénéfice' : 'Déficit';
+
+  const seuilPassWE = Math.ceil(totalEstime / state.we.prix);
+  document.getElementById('kpi-seuil').textContent = fmt(totalEstime);
+  document.getElementById('kpi-seuil-sub').textContent = `≈ ${seuilPassWE} pass WE à ${state.we.prix}€`;
+
+  const remplissage = Math.round(seuilPassWE / state.we.dispo * 100);
+  const rempEl = document.getElementById('kpi-remplissage');
+  rempEl.textContent = remplissage + '%';
+  rempEl.className = 'card-value ' + (remplissage <= 60 ? 'green' : remplissage <= 80 ? '' : 'red');
+  if (remplissage > 80) rempEl.style.color = 'var(--red)';
+  else if (remplissage <= 60) rempEl.style.color = 'var(--green)';
+  else rempEl.style.color = 'var(--yellow)';
+  document.getElementById('kpi-remplissage-sub').textContent = `Sur ${state.we.dispo} pass WE disponibles`;
+
+  // Header
+  document.getElementById('header-total').textContent = `Total dépenses estimées : ${fmt(totalEstime)}`;
+
+  // Bilan
+  document.getElementById('b-recettes').textContent = fmt(totalRecettes);
+  document.getElementById('b-depenses').textContent = fmt(totalEstime);
+  const bNet = document.getElementById('b-net');
+  bNet.textContent = fmt(net);
+  bNet.style.color = net >= 0 ? 'var(--accent2)' : 'var(--red)';
+  document.getElementById('b-reel').textContent = fmt(totalReel);
+
+  // Chart
+  drawChart(totalEstime, weSold);
+}
+
+// ===== CHART =====
+function drawChart(totalDepenses, weSold) {
+  const canvas = document.getElementById('breakeven-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.clientWidth - 40;
+  const H = 200;
+  canvas.width = W;
+  canvas.height = H;
+  ctx.clearRect(0, 0, W, H);
+
+  const maxPass = state.we.dispo;
+  const prix = state.we.prix;
+  const pad = { left: 72, right: 20, top: 20, bottom: 36 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+  const maxY = Math.max(totalDepenses * 1.1, maxPass * prix * 1.05);
+
+  function xP(p) { return pad.left + (p / maxPass) * cW; }
+  function yP(v) { return pad.top + cH - (v / maxY) * cH; }
+
+  // Grid
+  ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (cH / 4) * i;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cW, y); ctx.stroke();
+    ctx.fillStyle = '#999'; ctx.font = '9px monospace'; ctx.textAlign = 'right';
+    ctx.fillText(Math.round(maxY - (maxY/4)*i).toLocaleString('fr-FR')+'€', pad.left-4, y+3);
+  }
+  ctx.fillStyle = '#999'; ctx.font = '9px monospace'; ctx.textAlign = 'center';
+  [0, Math.round(maxPass/4), Math.round(maxPass/2), Math.round(maxPass*3/4), maxPass].forEach(p => {
+    ctx.fillText(p, xP(p), H - pad.bottom + 14);
+  });
+  ctx.fillText('Pass WE vendus', pad.left + cW/2, H - 4);
+
+  // Break-even
+  const bePass = totalDepenses / prix;
+  const beX = xP(bePass);
+
+  // Zones
+  ctx.fillStyle = 'rgba(211,47,47,0.07)';
+  ctx.fillRect(pad.left, pad.top, Math.min(beX - pad.left, cW), cH);
+  ctx.fillStyle = 'rgba(46,125,50,0.07)';
+  if (beX < pad.left + cW)
+    ctx.fillRect(beX, pad.top, pad.left + cW - beX, cH);
+
+  // Dépenses line
+  ctx.strokeStyle = '#d32f2f'; ctx.lineWidth = 1.5; ctx.setLineDash([6,3]);
+  ctx.beginPath(); ctx.moveTo(pad.left, yP(totalDepenses)); ctx.lineTo(pad.left+cW, yP(totalDepenses)); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Recettes line
+  ctx.strokeStyle = '#1565c0'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(xP(0), yP(0)); ctx.lineTo(xP(maxPass), yP(maxPass*prix)); ctx.stroke();
+
+  // Break-even vertical
+  ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(beX, pad.top); ctx.lineTo(beX, pad.top+cH); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Break-even dot & label
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath(); ctx.arc(beX, yP(totalDepenses), 4, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#1a1a1a'; ctx.font = 'bold 10px monospace';
+  ctx.textAlign = bePass > maxPass*0.75 ? 'right' : 'left';
+  ctx.fillText(`Seuil : ${Math.ceil(bePass)} pass`, beX + (bePass > maxPass*0.75 ? -8 : 8), yP(totalDepenses) - 10);
+
+  // Current position
+  if (weSold > 0) {
+    const cx = xP(weSold); const cy = yP(weSold * prix);
+    ctx.fillStyle = '#2e7d32';
+    ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#2e7d32'; ctx.font = '9px monospace'; ctx.textAlign = 'center';
+    ctx.fillText('▲ ' + weSold + ' vendus', cx, cy - 10);
+  }
+
+  // Legend
+  ctx.font = '9px monospace'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#1565c0'; ctx.fillText('── Recettes pass WE', pad.left+4, pad.top+14);
+  ctx.fillStyle = '#d32f2f'; ctx.fillText('- - Seuil dépenses', pad.left+4, pad.top+28);
+}
+
+// ===== INIT =====
+buildDepenses();
+recalc();
+window.addEventListener('resize', recalc);
+</script>
+</body>
+</html>
