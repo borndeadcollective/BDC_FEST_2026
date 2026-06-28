@@ -429,8 +429,6 @@ function updateTicketDisplay() {
   document.getElementById('d-dim-max').textContent = 'max ' + window.state.dim.dispo;
   document.getElementById('header-sub').textContent = window.state.salle + ' — ' + window.state.date;
   document.getElementById('header-cap').textContent = 'Capacité : ' + window.state.capacite + ' | En vente : ' + window.state.we.dispo;
-  document.getElementById('kpi-acompte').textContent = fmt(window.state.acompte);
-  document.getElementById('kpi-acompte-sub').textContent = window.state.acompte_desc;
 }
 
 // ===== BUILD DEPENSES =====
