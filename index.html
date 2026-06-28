@@ -59,8 +59,8 @@
 
   /* DEPENSE GRID */
   .dep-grid { background: var(--surface); border: 1px solid var(--border); }
-  .dep-row { display: grid; grid-template-columns: 2fr 110px 110px; align-items: center; border-bottom: 1px solid var(--border); padding: 8px 12px; gap: 8px; }
-  @media(max-width:600px) { .dep-row { grid-template-columns: 1.5fr 85px 85px; font-size:10px; padding:6px 8px; } }
+  .dep-row { display: grid; grid-template-columns: 2fr 90px 90px 90px; align-items: center; border-bottom: 1px solid var(--border); padding: 8px 12px; gap: 8px; }
+  @media(max-width:600px) { .dep-row { grid-template-columns: 1.2fr 70px 70px 70px; font-size:10px; padding:6px 8px; } }
   .dep-row.header { background: var(--surface2); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
   .dep-row.total-r { background: var(--surface2); font-weight: 700; }
   .d-input { background: #fff; border: 1px solid var(--border2); color: var(--text); font-family: 'Space Mono', monospace; font-size: 12px; padding: 4px 6px; width: 100%; text-align: right; }
@@ -157,7 +157,7 @@
     <div class="card"><div class="card-label">Résultat net</div><div class="card-value" id="kpi-net">0 €</div><div class="card-sub" id="kpi-net-sub">—</div></div>
     <div class="card"><div class="card-label">Seuil rentabilité</div><div class="card-value" id="kpi-seuil">0 €</div><div class="card-sub" id="kpi-seuil-sub">—</div></div>
     <div class="card"><div class="card-label">Remplissage nécessaire</div><div class="card-value" id="kpi-remplissage">—</div><div class="card-sub" id="kpi-remplissage-sub">—</div></div>
-    <div class="card"><div class="card-label">Acompte versé</div><div class="card-value" style="color:var(--yellow)" id="kpi-acompte">500 €</div><div class="card-sub" id="kpi-acompte-sub">Wits End + TS Warspite</div></div>
+    <div class="card" style="border:2px solid var(--red)"><div class="card-label">Reste à débourser</div><div class="card-value red" id="kpi-reste">0 €</div><div class="card-sub" id="kpi-reste-sub">—</div></div>
   </div>
 
   <div class="section">
@@ -212,7 +212,7 @@
       <div><div class="b-label">Recettes</div><div class="b-val green" id="b-recettes">0 €</div></div>
       <div><div class="b-label">Dépenses estimées</div><div class="b-val red" id="b-depenses">0 €</div></div>
       <div><div class="b-label">Résultat net</div><div class="b-val" id="b-net">0 €</div></div>
-      <div><div class="b-label">Dépenses réelles</div><div class="b-val red" id="b-reel">0 €</div></div>
+      <div><div class="b-label">Total déjà payé</div><div class="b-val" style="color:var(--accent2)" id="b-paye">0 €</div></div>
     </div>
     <div class="note">Groupes parisiens à 0€ pour l'instant. Bonus post-fest à calculer séparément.</div>
   </div>
@@ -224,17 +224,17 @@
     <div class="section-title">Groupes</div>
     <div class="acompte-note" id="acompte-display">⚡ Acompte versé : 500 € — Wits End + TS Warspite (PayPal)</div>
     <div class="dep-grid">
-      <div class="dep-row header"><div>Groupe</div><div class="right">Estimé</div><div class="right">Réel payé</div></div>
+      <div class="dep-row header"><div>Groupe</div><div class="right">Estimé</div><div class="right">Payé</div><div class="right">Reste</div></div>
       <div id="groupes-list"></div>
-      <div class="dep-row total-r"><div>Total groupes</div><div class="right red" id="total-g-estime">0 €</div><div class="right red" id="total-g-reel">0 €</div></div>
+      <div class="dep-row total-r"><div>Total groupes</div><div class="right red" id="total-g-estime">0 €</div><div class="right green" id="total-g-paye">0 €</div><div class="right red" id="total-g-reste">0 €</div></div>
     </div>
   </div>
   <div class="section">
     <div class="section-title">Frais fixes</div>
     <div class="dep-grid">
-      <div class="dep-row header"><div>Poste</div><div class="right">Estimé</div><div class="right">Réel payé</div></div>
+      <div class="dep-row header"><div>Poste</div><div class="right">Estimé</div><div class="right">Payé</div><div class="right">Reste</div></div>
       <div id="frais-list"></div>
-      <div class="dep-row total-r"><div>Total frais</div><div class="right red" id="total-f-estime">0 €</div><div class="right red" id="total-f-reel">0 €</div></div>
+      <div class="dep-row total-r"><div>Total frais</div><div class="right red" id="total-f-estime">0 €</div><div class="right green" id="total-f-paye">0 €</div><div class="right red" id="total-f-reste">0 €</div></div>
     </div>
   </div>
 </div>
@@ -318,31 +318,31 @@ window.state = {
   acompte_desc: "Wits End + TS Warspite — PayPal",
   ventes: { wePrev: 30, wePorte: 0, samPrev: 0, samPorte: 0, dimPrev: 0, dimPorte: 0 },
   groupes: [
-    { name: "Bulldoze", estime: 3000, reel: null, type: "normal" },
-    { name: "Wits End + TS Warspite", estime: 1045, reel: 1045, type: "normal" },
-    { name: "The Flex", estime: 1000, reel: 1000, type: "normal" },
-    { name: "Headbussa", estime: 800, reel: null, type: "normal" },
-    { name: "Fools Die", estime: 800, reel: 800, type: "normal" },
-    { name: "Bulls Shitt", estime: 900, reel: null, type: "normal" },
-    { name: "Imposter", estime: 600, reel: 465, type: "normal" },
-    { name: "Profanation", estime: 400, reel: null, type: "normal" },
-    { name: "Loyal 2 None", estime: 300, reel: null, type: "normal" },
-    { name: "Premonition", estime: 250, reel: null, type: "normal" },
-    { name: "Escape", estime: 200, reel: null, type: "normal" },
-    { name: "Hard to Handle", estime: 0, reel: 0, type: "paris" },
-    { name: "Cold Decay", estime: 0, reel: 0, type: "paris" },
-    { name: "Take it in Blood", estime: 0, reel: 0, type: "paris" },
-    { name: "Soul Hater", estime: 0, reel: 0, type: "paris" },
-    { name: "Corruption Pact", estime: 0, reel: 0, type: "paris" },
-    { name: "Mozdrill", estime: 0, reel: 0, type: "paris" },
-    { name: "Severed", estime: 0, reel: 0, type: "paris" },
-    { name: "Worst Doubt", estime: 0, reel: 0, type: "paris" },
+    { name: "Bulldoze", estime: 3000, paye: 0, reste: 3000, type: "normal" },
+    { name: "Wits End + TS Warspite", estime: 1043, paye: 500, reste: 543, type: "normal" },
+    { name: "The Flex", estime: 975, paye: 975, reste: 0, type: "normal" },
+    { name: "Headbussa", estime: 800, paye: 0, reste: 800, type: "normal" },
+    { name: "Fools Die", estime: 800, paye: 400, reste: 400, type: "normal" },
+    { name: "Bulls Shitt", estime: 900, paye: 0, reste: 900, type: "normal" },
+    { name: "Imposter", estime: 465, paye: 465, reste: 0, type: "normal" },
+    { name: "Profanation", estime: 400, paye: 0, reste: 400, type: "normal" },
+    { name: "Loyal 2 None", estime: 300, paye: 0, reste: 300, type: "normal" },
+    { name: "Premonition", estime: 250, paye: 0, reste: 250, type: "normal" },
+    { name: "Escape", estime: 200, paye: 0, reste: 200, type: "normal" },
+    { name: "Hard to Handle", estime: 0, paye: 0, reste: 0, type: "paris" },
+    { name: "Cold Decay", estime: 0, paye: 0, reste: 0, type: "paris" },
+    { name: "Take it in Blood", estime: 0, paye: 0, reste: 0, type: "paris" },
+    { name: "Soul Hater", estime: 0, paye: 0, reste: 0, type: "paris" },
+    { name: "Corruption Pact", estime: 0, paye: 0, reste: 0, type: "paris" },
+    { name: "Mozdrill", estime: 0, paye: 0, reste: 0, type: "paris" },
+    { name: "Severed", estime: 0, paye: 0, reste: 0, type: "paris" },
+    { name: "Worst Doubt", estime: 0, paye: 0, reste: 0, type: "paris" },
   ],
   frais: [
-    { name: "Location salle (2 jours)", estime: 300, reel: 300 },
-    { name: "Catering (2 jours)", estime: 650, reel: null },
-    { name: "Hébergements", estime: 500, reel: null },
-    { name: "Frais annexes", estime: 150, reel: null },
+    { name: "Location salle (2 jours)", estime: 300, paye: 0, reste: 300 },
+    { name: "Catering (2 jours)", estime: 650, paye: 0, reste: 650 },
+    { name: "Hébergements", estime: 500, paye: 0, reste: 500 },
+    { name: "Frais annexes", estime: 150, paye: 0, reste: 150 },
   ]
 };
 
@@ -442,11 +442,12 @@ window.buildDepenses = function() {
   window.state.groupes.forEach((g, i) => {
     const row = document.createElement('div');
     row.className = 'dep-row';
-    const rv = g.reel !== null ? g.reel : '';
+    const solde = (g.reste||0) === 0 && g.estime > 0 ? '<span class="tag tag-ok">✓ Soldé</span>' : '';
     row.innerHTML = `
-      <div>${g.name}${g.type==='paris'?'<span class="tag tag-paris">Paris</span>':''}${g.reel!==null?'<span class="tag tag-ok">✓</span>':''}</div>
-      <div class="right" style="color:var(--text-dim)">${g.estime>0?g.estime+' €':'—'}</div>
-      <div class="right"><input class="d-input" type="number" id="g-reel-${i}" value="${rv}" placeholder="—" min="0" oninput="onReelChange('g',${i},this.value)"></div>
+      <div>${g.name}${g.type==='paris'?'<span class="tag tag-paris">Paris</span>':''}${solde}</div>
+      <div class="right" style="color:var(--text-dim)">${g.estime>0?fmt(g.estime):'—'}</div>
+      <div class="right"><input class="d-input" type="number" id="g-paye-${i}" value="${g.paye||0}" min="0" oninput="onPayeChange('g',${i},'paye',this.value)"></div>
+      <div class="right"><input class="d-input" type="number" id="g-reste-${i}" value="${g.reste||0}" min="0" style="color:${(g.reste||0)>0?'var(--red)':'var(--green)'}" oninput="onPayeChange('g',${i},'reste',this.value)"></div>
     `;
     gl.appendChild(row);
   });
@@ -457,21 +458,22 @@ window.buildDepenses = function() {
   window.state.frais.forEach((f, i) => {
     const row = document.createElement('div');
     row.className = 'dep-row';
-    const rv = f.reel !== null ? f.reel : '';
+    const solde = (f.reste||0) === 0 ? '<span class="tag tag-ok">✓ Soldé</span>' : '';
     row.innerHTML = `
-      <div>${f.name}</div>
-      <div class="right" style="color:var(--text-dim)">${f.estime} €</div>
-      <div class="right"><input class="d-input" type="number" id="f-reel-${i}" value="${rv}" placeholder="—" min="0" oninput="onReelChange('f',${i},this.value)"></div>
+      <div>${f.name}${solde}</div>
+      <div class="right" style="color:var(--text-dim)">${fmt(f.estime)}</div>
+      <div class="right"><input class="d-input" type="number" id="f-paye-${i}" value="${f.paye||0}" min="0" oninput="onPayeChange('f',${i},'paye',this.value)"></div>
+      <div class="right"><input class="d-input" type="number" id="f-reste-${i}" value="${f.reste||0}" min="0" style="color:${(f.reste||0)>0?'var(--red)':'var(--green)'}" oninput="onPayeChange('f',${i},'reste',this.value)"></div>
     `;
     fl.appendChild(row);
   });
   recalc();
 };
 
-window.onReelChange = function(type, i, val) {
-  const v = val === '' ? null : parseInt(val)||0;
-  if (type === 'g') window.state.groupes[i].reel = v;
-  else window.state.frais[i].reel = v;
+window.onPayeChange = function(type, i, field, val) {
+  const v = parseInt(val)||0;
+  if (type === 'g') window.state.groupes[i][field] = v;
+  else window.state.frais[i][field] = v;
   recalc();
   debouncedSave();
 };
@@ -633,35 +635,20 @@ window.recalc = function() {
 
   // Dépenses
   const totalGEstime = s.groupes.reduce((a,g)=>a+g.estime,0);
-  let totalGReel = 0;
-  s.groupes.forEach((g,i) => {
-    const el = document.getElementById(`g-reel-${i}`);
-    const v2 = el?el.value:'';
-    totalGReel += v2!==''?(parseInt(v2)||0):(g.reel!==null?g.reel:g.estime);
-  });
+
   const totalFEstime = s.frais.reduce((a,f)=>a+f.estime,0);
-  let totalFReel = 0;
-  s.frais.forEach((f,i) => {
-    const el = document.getElementById(`f-reel-${i}`);
-    const v2 = el?el.value:'';
-    totalFReel += v2!==''?(parseInt(v2)||0):(f.reel!==null?f.reel:f.estime);
-  });
+
 
   const totalEstime = totalGEstime + totalFEstime;
-  const totalReel = totalGReel + totalFReel;
+
   const net = totalRecettes - totalEstime;
 
-  if(document.getElementById('total-g-estime')) {
-    document.getElementById('total-g-estime').textContent = fmt(totalGEstime);
-    document.getElementById('total-g-reel').textContent = fmt(totalGReel);
-    document.getElementById('total-f-estime').textContent = fmt(totalFEstime);
-    document.getElementById('total-f-reel').textContent = fmt(totalFReel);
-  }
+
 
   document.getElementById('kpi-recettes').textContent = fmt(totalRecettes);
   document.getElementById('kpi-recettes-sub').textContent = (weSold+samSold+dimSold)+' billet(s) vendus';
   document.getElementById('kpi-depenses').textContent = fmt(totalEstime);
-  document.getElementById('kpi-acompte').textContent = fmt(s.acompte);
+
 
   const netEl = document.getElementById('kpi-net');
   netEl.textContent = fmt(net);
@@ -684,7 +671,24 @@ window.recalc = function() {
   const bNet = document.getElementById('b-net');
   bNet.textContent = fmt(net);
   bNet.style.color = net>=0?'var(--accent2)':'var(--red)';
-  document.getElementById('b-reel').textContent = fmt(totalReel);
+  const totalGPaye = s.groupes.reduce((a,g)=>a+(g.paye||0),0);
+  const totalFPaye = s.frais.reduce((a,f)=>a+(f.paye||0),0);
+  const totalGReste = s.groupes.reduce((a,g)=>a+(g.reste||0),0);
+  const totalFReste = s.frais.reduce((a,f)=>a+(f.reste||0),0);
+  const totalPaye = totalGPaye + totalFPaye;
+  const totalReste = totalGReste + totalFReste;
+  if(document.getElementById('total-g-paye')) {
+    document.getElementById('total-g-estime').textContent = fmt(totalGEstime);
+    document.getElementById('total-g-paye').textContent = fmt(totalGPaye);
+    document.getElementById('total-g-reste').textContent = fmt(totalGReste);
+    document.getElementById('total-f-estime').textContent = fmt(totalFEstime);
+    document.getElementById('total-f-paye').textContent = fmt(totalFPaye);
+    document.getElementById('total-f-reste').textContent = fmt(totalFReste);
+  }
+  document.getElementById('kpi-reste').textContent = fmt(totalReste);
+  document.getElementById('kpi-reste-sub').textContent = fmt(totalPaye) + ' déjà payé';
+  document.getElementById('header-total').textContent = 'Reste à débourser : '+fmt(totalReste);
+  document.getElementById('b-paye').textContent = fmt(totalPaye);
 
   drawChart(totalEstime, weSold);
 };
