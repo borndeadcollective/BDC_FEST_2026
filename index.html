@@ -431,7 +431,6 @@ function updateTicketDisplay() {
   document.getElementById('header-cap').textContent = 'Capacité : ' + window.state.capacite + ' | En vente : ' + window.state.we.dispo;
   document.getElementById('kpi-acompte').textContent = fmt(window.state.acompte);
   document.getElementById('kpi-acompte-sub').textContent = window.state.acompte_desc;
-  document.getElementById('acompte-display').textContent = '⚡ Acompte versé : ' + fmt(window.state.acompte) + ' — ' + window.state.acompte_desc;
 }
 
 // ===== BUILD DEPENSES =====
@@ -617,10 +616,10 @@ window.recalc = function() {
   const dimTotal = dimSold * s.dim.prix;
   const totalRecettes = weTotal + samTotal + dimTotal;
 
-  document.getElementById('we-total').textContent = fmt(weTotal);
-  document.getElementById('sam-total').textContent = fmt(samTotal);
-  document.getElementById('dim-total').textContent = fmt(dimTotal);
-  document.getElementById('total-recettes').textContent = fmt(totalRecettes);
+  (document.getElementById('we-total')||{textContent:''}).textContent = fmt(weTotal);
+  (document.getElementById('sam-total')||{textContent:''}).textContent = fmt(samTotal);
+  (document.getElementById('dim-total')||{textContent:''}).textContent = fmt(dimTotal);
+  (document.getElementById('total-recettes')||{textContent:''}).textContent = fmt(totalRecettes);
 
   // Distrib
   const setD = (id, val, max, color, rec) => {
@@ -645,29 +644,29 @@ window.recalc = function() {
 
 
 
-  document.getElementById('kpi-recettes').textContent = fmt(totalRecettes);
-  document.getElementById('kpi-recettes-sub').textContent = (weSold+samSold+dimSold)+' billet(s) vendus';
-  document.getElementById('kpi-depenses').textContent = fmt(totalEstime);
+  (document.getElementById('kpi-recettes')||{textContent:''}).textContent = fmt(totalRecettes);
+  (document.getElementById('kpi-recettes-sub')||{textContent:''}).textContent = (weSold+samSold+dimSold)+' billet(s) vendus';
+  (document.getElementById('kpi-depenses')||{textContent:''}).textContent = fmt(totalEstime);
 
 
   const netEl = document.getElementById('kpi-net');
   netEl.textContent = fmt(net);
   netEl.className = 'card-value '+(net>=0?'green':'red');
-  document.getElementById('kpi-net-sub').textContent = net>=0?'✓ Bénéfice':'Déficit';
+  (document.getElementById('kpi-net-sub')||{textContent:''}).textContent = net>=0?'✓ Bénéfice':'Déficit';
 
   const seuilWE = Math.ceil(totalEstime/s.we.prix);
-  document.getElementById('kpi-seuil').textContent = fmt(totalEstime);
-  document.getElementById('kpi-seuil-sub').textContent = `≈ ${seuilWE} pass WE à ${s.we.prix}€`;
+  (document.getElementById('kpi-seuil')||{textContent:''}).textContent = fmt(totalEstime);
+  (document.getElementById('kpi-seuil-sub')||{textContent:''}).textContent = `≈ ${seuilWE} pass WE à ${s.we.prix}€`;
 
   const remp = Math.round(seuilWE/s.we.dispo*100);
   const rEl = document.getElementById('kpi-remplissage');
   rEl.textContent = remp+'%';
   rEl.style.color = remp<=60?'var(--green)':remp<=80?'var(--yellow)':'var(--red)';
-  document.getElementById('kpi-remplissage-sub').textContent = `Sur ${s.we.dispo} pass WE`;
+  (document.getElementById('kpi-remplissage-sub')||{textContent:''}).textContent = `Sur ${s.we.dispo} pass WE`;
 
-  document.getElementById('header-total').textContent = 'Dépenses estimées : '+fmt(totalEstime);
-  document.getElementById('b-recettes').textContent = fmt(totalRecettes);
-  document.getElementById('b-depenses').textContent = fmt(totalEstime);
+  (document.getElementById('header-total')||{textContent:''}).textContent = 'Dépenses estimées : '+fmt(totalEstime);
+  (document.getElementById('b-recettes')||{textContent:''}).textContent = fmt(totalRecettes);
+  (document.getElementById('b-depenses')||{textContent:''}).textContent = fmt(totalEstime);
   const bNet = document.getElementById('b-net');
   bNet.textContent = fmt(net);
   bNet.style.color = net>=0?'var(--accent2)':'var(--red)';
@@ -678,17 +677,17 @@ window.recalc = function() {
   const totalPaye = totalGPaye + totalFPaye;
   const totalReste = totalGReste + totalFReste;
   if(document.getElementById('total-g-paye')) {
-    document.getElementById('total-g-estime').textContent = fmt(totalGEstime);
-    document.getElementById('total-g-paye').textContent = fmt(totalGPaye);
-    document.getElementById('total-g-reste').textContent = fmt(totalGReste);
-    document.getElementById('total-f-estime').textContent = fmt(totalFEstime);
-    document.getElementById('total-f-paye').textContent = fmt(totalFPaye);
-    document.getElementById('total-f-reste').textContent = fmt(totalFReste);
+    (document.getElementById('total-g-estime')||{textContent:''}).textContent = fmt(totalGEstime);
+    (document.getElementById('total-g-paye')||{textContent:''}).textContent = fmt(totalGPaye);
+    (document.getElementById('total-g-reste')||{textContent:''}).textContent = fmt(totalGReste);
+    (document.getElementById('total-f-estime')||{textContent:''}).textContent = fmt(totalFEstime);
+    (document.getElementById('total-f-paye')||{textContent:''}).textContent = fmt(totalFPaye);
+    (document.getElementById('total-f-reste')||{textContent:''}).textContent = fmt(totalFReste);
   }
-  document.getElementById('kpi-reste').textContent = fmt(totalReste);
-  document.getElementById('kpi-reste-sub').textContent = fmt(totalPaye) + ' déjà payé';
-  document.getElementById('header-total').textContent = 'Reste à débourser : '+fmt(totalReste);
-  document.getElementById('b-paye').textContent = fmt(totalPaye);
+  (document.getElementById('kpi-reste')||{textContent:''}).textContent = fmt(totalReste);
+  (document.getElementById('kpi-reste-sub')||{textContent:''}).textContent = fmt(totalPaye) + ' déjà payé';
+  (document.getElementById('header-total')||{textContent:''}).textContent = 'Reste à débourser : '+fmt(totalReste);
+  (document.getElementById('b-paye')||{textContent:''}).textContent = fmt(totalPaye);
 
   drawChart(totalEstime, weSold);
 };
