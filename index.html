@@ -167,10 +167,18 @@
       <div class="ticket-row">
         <div>Pass week-end</div>
         <div class="right" id="t-prix-we">60 €</div>
-        <div class="right" id="t-dispo-we">280</div>
+        <div class="right" id="t-dispo-we">250</div>
         <div class="right"><input class="t-input" type="number" id="we-prevente" value="0" min="0" oninput="onTicketChange()"></div>
         <div class="right"><input class="t-input" type="number" id="we-porte" value="0" min="0" oninput="onTicketChange()"></div>
         <div class="right green" id="we-total">0 €</div>
+      </div>
+      <div class="ticket-row">
+        <div>Pass 2 jours rentrée</div>
+        <div class="right" style="color:var(--yellow)">50 €</div>
+        <div class="right">30</div>
+        <div class="right"><input class="t-input" type="number" id="promo-prevente" value="0" min="0" oninput="onTicketChange()"></div>
+        <div class="right"><input class="t-input" type="number" id="promo-porte" value="0" min="0" oninput="onTicketChange()"></div>
+        <div class="right green" id="promo-total">0 €</div>
       </div>
       <div class="ticket-row">
         <div>Journée samedi</div>
@@ -394,6 +402,8 @@ function applyStateToUI() {
   const v = window.state.ventes;
   document.getElementById('we-prevente').value = v.wePrev || 0;
   document.getElementById('we-porte').value = v.wePorte || 0;
+  document.getElementById('promo-prevente').value = v.promoPrev || 0;
+  document.getElementById('promo-porte').value = v.promoPorte || 0;
   document.getElementById('sam-prevente').value = v.samPrev || 0;
   document.getElementById('sam-porte').value = v.samPorte || 0;
   document.getElementById('dim-prevente').value = v.dimPrev || 0;
@@ -408,6 +418,8 @@ window.onTicketChange = function() {
   window.state.ventes = {
     wePrev: parseInt(document.getElementById('we-prevente').value)||0,
     wePorte: parseInt(document.getElementById('we-porte').value)||0,
+    promoPrev: parseInt(document.getElementById('promo-prevente').value)||0,
+    promoPorte: parseInt(document.getElementById('promo-porte').value)||0,
     samPrev: parseInt(document.getElementById('sam-prevente').value)||0,
     samPorte: parseInt(document.getElementById('sam-porte').value)||0,
     dimPrev: parseInt(document.getElementById('dim-prevente').value)||0,
@@ -607,12 +619,15 @@ window.recalc = function() {
   const s = window.state;
   const v = s.ventes;
   const weSold = (v.wePrev||0)+(v.wePorte||0);
+  const promoSold = (v.promoPrev||0)+(v.promoPorte||0);
   const samSold = (v.samPrev||0)+(v.samPorte||0);
   const dimSold = (v.dimPrev||0)+(v.dimPorte||0);
   const weTotal = weSold * s.we.prix;
+  const promoTotal = promoSold * 50;
   const samTotal = samSold * s.sam.prix;
   const dimTotal = dimSold * s.dim.prix;
-  const totalRecettes = weTotal + samTotal + dimTotal;
+  const totalRecettes = weTotal + promoTotal + samTotal + dimTotal;
+  document.getElementById('promo-total').textContent = fmt(promoTotal);
 
   (document.getElementById('we-total')||{textContent:''}).textContent = fmt(weTotal);
   (document.getElementById('sam-total')||{textContent:''}).textContent = fmt(samTotal);
@@ -643,7 +658,7 @@ window.recalc = function() {
 
 
   (document.getElementById('kpi-recettes')||{textContent:''}).textContent = fmt(totalRecettes);
-  (document.getElementById('kpi-recettes-sub')||{textContent:''}).textContent = (weSold+samSold+dimSold)+' billet(s) vendus';
+  (document.getElementById('kpi-recettes-sub')||{textContent:''}).textContent = (weSold+promoSold+samSold+dimSold)+' billet(s) vendus';
   (document.getElementById('kpi-depenses')||{textContent:''}).textContent = fmt(totalEstime);
 
 
