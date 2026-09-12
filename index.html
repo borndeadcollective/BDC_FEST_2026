@@ -49,8 +49,8 @@
 
   /* TICKET GRID */
   .ticket-grid { background: var(--surface); border: 1px solid var(--border); }
-  .ticket-row { display: grid; grid-template-columns: 2fr 70px 70px 90px 90px 90px; align-items: center; border-bottom: 1px solid var(--border); padding: 8px 12px; gap: 8px; }
-  @media(max-width:600px) { .ticket-row { grid-template-columns: 1.2fr 50px 50px 65px 65px 65px; font-size:10px; padding:6px 8px; gap:4px; } }
+  .ticket-row { display: grid; grid-template-columns: 2fr 70px 70px 90px 90px 90px 90px; align-items: center; border-bottom: 1px solid var(--border); padding: 8px 12px; gap: 8px; }
+  @media(max-width:600px) { .ticket-row { grid-template-columns: 1.2fr 45px 45px 55px 55px 55px 55px; font-size:10px; padding:6px 8px; gap:4px; } }
   .ticket-row.header { background: var(--surface2); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
   .ticket-row.total-r { background: var(--surface2); font-weight: 700; }
   .t-input { background: #fff; border: 1px solid var(--border2); color: var(--blue); font-family: 'Space Mono', monospace; font-size: 12px; padding: 4px 6px; width: 100%; text-align: right; }
@@ -163,13 +163,14 @@
   <div class="section">
     <div class="section-title">Billetterie — Saisie des ventes</div>
     <div class="ticket-grid">
-      <div class="ticket-row header"><div>Type</div><div class="right">Prix</div><div class="right">Dispo</div><div class="right">Prévente</div><div class="right">Porte</div><div class="right">Recette</div></div>
+      <div class="ticket-row header"><div>Type</div><div class="right">Prix</div><div class="right">Dispo</div><div class="right">Prévente</div><div class="right">Porte</div><div class="right">Sur place</div><div class="right">Recette</div></div>
       <div class="ticket-row">
         <div>Pass week-end</div>
         <div class="right" id="t-prix-we">60 €</div>
         <div class="right" id="t-dispo-we">250</div>
         <div class="right"><input class="t-input" type="number" id="we-prevente" value="0" min="0" oninput="onTicketChange()"></div>
         <div class="right"><input class="t-input" type="number" id="we-porte" value="0" min="0" oninput="onTicketChange()"></div>
+        <div class="right"><input class="t-input" type="number" id="we-surplace" value="0" min="0" oninput="onTicketChange()"></div>
         <div class="right green" id="we-total">0 €</div>
       </div>
       <div class="ticket-row">
@@ -178,6 +179,7 @@
         <div class="right">30</div>
         <div class="right"><input class="t-input" type="number" id="promo-prevente" value="0" min="0" oninput="onTicketChange()"></div>
         <div class="right"><input class="t-input" type="number" id="promo-porte" value="0" min="0" oninput="onTicketChange()"></div>
+        <div class="right"><input class="t-input" type="number" id="promo-surplace" value="0" min="0" oninput="onTicketChange()"></div>
         <div class="right green" id="promo-total">0 €</div>
       </div>
       <div class="ticket-row">
@@ -186,6 +188,7 @@
         <div class="right" id="t-dispo-sam">100</div>
         <div class="right"><input class="t-input" type="number" id="sam-prevente" value="0" min="0" oninput="onTicketChange()"></div>
         <div class="right"><input class="t-input" type="number" id="sam-porte" value="0" min="0" oninput="onTicketChange()"></div>
+        <div class="right"><input class="t-input" type="number" id="sam-surplace" value="0" min="0" oninput="onTicketChange()"></div>
         <div class="right green" id="sam-total">0 €</div>
       </div>
       <div class="ticket-row">
@@ -194,9 +197,10 @@
         <div class="right" id="t-dispo-dim">100</div>
         <div class="right"><input class="t-input" type="number" id="dim-prevente" value="0" min="0" oninput="onTicketChange()"></div>
         <div class="right"><input class="t-input" type="number" id="dim-porte" value="0" min="0" oninput="onTicketChange()"></div>
+        <div class="right"><input class="t-input" type="number" id="dim-surplace" value="0" min="0" oninput="onTicketChange()"></div>
         <div class="right green" id="dim-total">0 €</div>
       </div>
-      <div class="ticket-row total-r"><div>TOTAL</div><div></div><div></div><div></div><div></div><div class="right green" id="total-recettes">0 €</div></div>
+      <div class="ticket-row total-r"><div>TOTAL</div><div></div><div></div><div></div><div></div><div></div><div class="right green" id="total-recettes">0 €</div></div>
     </div>
   </div>
 
@@ -402,12 +406,16 @@ function applyStateToUI() {
   const v = window.state.ventes;
   document.getElementById('we-prevente').value = v.wePrev || 0;
   document.getElementById('we-porte').value = v.wePorte || 0;
+  document.getElementById('we-surplace').value = v.weSurplace || 0;
   document.getElementById('promo-prevente').value = v.promoPrev || 0;
   document.getElementById('promo-porte').value = v.promoPorte || 0;
+  document.getElementById('promo-surplace').value = v.promoSurplace || 0;
   document.getElementById('sam-prevente').value = v.samPrev || 0;
   document.getElementById('sam-porte').value = v.samPorte || 0;
+  document.getElementById('sam-surplace').value = v.samSurplace || 0;
   document.getElementById('dim-prevente').value = v.dimPrev || 0;
   document.getElementById('dim-porte').value = v.dimPorte || 0;
+  document.getElementById('dim-surplace').value = v.dimSurplace || 0;
   updateTicketDisplay();
   buildDepenses();
   recalc();
@@ -418,12 +426,16 @@ window.onTicketChange = function() {
   window.state.ventes = {
     wePrev: parseInt(document.getElementById('we-prevente').value)||0,
     wePorte: parseInt(document.getElementById('we-porte').value)||0,
+    weSurplace: parseInt(document.getElementById('we-surplace').value)||0,
     promoPrev: parseInt(document.getElementById('promo-prevente').value)||0,
     promoPorte: parseInt(document.getElementById('promo-porte').value)||0,
+    promoSurplace: parseInt(document.getElementById('promo-surplace').value)||0,
     samPrev: parseInt(document.getElementById('sam-prevente').value)||0,
     samPorte: parseInt(document.getElementById('sam-porte').value)||0,
+    samSurplace: parseInt(document.getElementById('sam-surplace').value)||0,
     dimPrev: parseInt(document.getElementById('dim-prevente').value)||0,
     dimPorte: parseInt(document.getElementById('dim-porte').value)||0,
+    dimSurplace: parseInt(document.getElementById('dim-surplace').value)||0,
   };
   recalc();
   debouncedSave();
@@ -618,10 +630,10 @@ window.fmt = fmt;
 window.recalc = function() {
   const s = window.state;
   const v = s.ventes;
-  const weSold = (v.wePrev||0)+(v.wePorte||0);
-  const promoSold = (v.promoPrev||0)+(v.promoPorte||0);
-  const samSold = (v.samPrev||0)+(v.samPorte||0);
-  const dimSold = (v.dimPrev||0)+(v.dimPorte||0);
+  const weSold = (v.wePrev||0)+(v.wePorte||0)+(v.weSurplace||0);
+  const promoSold = (v.promoPrev||0)+(v.promoPorte||0)+(v.promoSurplace||0);
+  const samSold = (v.samPrev||0)+(v.samPorte||0)+(v.samSurplace||0);
+  const dimSold = (v.dimPrev||0)+(v.dimPorte||0)+(v.dimSurplace||0);
   const weTotal = weSold * s.we.prix;
   const promoTotal = promoSold * 50;
   const samTotal = samSold * s.sam.prix;
