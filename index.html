@@ -202,6 +202,13 @@
       </div>
       <div class="ticket-row total-r"><div>TOTAL</div><div></div><div></div><div></div><div></div><div></div><div class="right green" id="total-recettes">0 €</div></div>
     </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-top:none;padding:12px 12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);">💵 Recettes sur place non ventilées (€)</div>
+      <input class="t-input" type="number" id="cash-surplace" value="0" min="0" oninput="onTicketChange()" style="width:120px;color:var(--green);">
+      <div style="font-size:10px;color:var(--text-dim);">À saisir quand le décompte exact des billets n'est pas possible</div>
+    </div>
+    <div style="display:none">
+    </div>
   </div>
 
   <div class="section">
@@ -351,10 +358,11 @@ window.state = {
     { name: "Worst Doubt", estime: 0, paye: 0, reste: 0, type: "paris" },
   ],
   frais: [
-    { name: "Location salle (2 jours)", estime: 300, paye: 0, reste: 300 },
-    { name: "Catering (2 jours)", estime: 650, paye: 0, reste: 650 },
-    { name: "Hébergements", estime: 500, paye: 0, reste: 500 },
-    { name: "Frais annexes", estime: 150, paye: 0, reste: 150 },
+    { name: "Location salle (2 jours)", estime: 300, paye: 300, reste: 0 },
+    { name: "Catering (2 jours)", estime: 650, paye: 600, reste: 0 },
+    { name: "Hôtel Bulldoze", estime: 500, paye: 220.75, reste: 0 },
+    { name: "Frais annexes", estime: 150, paye: 100, reste: 0 },
+    { name: "Nourriture Bulldoze", estime: 100, paye: 0, reste: 100 },
   ]
 };
 
@@ -416,6 +424,7 @@ function applyStateToUI() {
   document.getElementById('dim-prevente').value = v.dimPrev || 0;
   document.getElementById('dim-porte').value = v.dimPorte || 0;
   document.getElementById('dim-surplace').value = v.dimSurplace || 0;
+  document.getElementById('cash-surplace').value = v.cashSurplace || 0;
   updateTicketDisplay();
   buildDepenses();
   recalc();
@@ -436,6 +445,7 @@ window.onTicketChange = function() {
     dimPrev: parseInt(document.getElementById('dim-prevente').value)||0,
     dimPorte: parseInt(document.getElementById('dim-porte').value)||0,
     dimSurplace: parseInt(document.getElementById('dim-surplace').value)||0,
+    cashSurplace: parseInt(document.getElementById('cash-surplace').value)||0,
   };
   recalc();
   debouncedSave();
@@ -464,8 +474,9 @@ window.buildDepenses = function() {
     const row = document.createElement('div');
     row.className = 'dep-row';
     const solde = (g.reste||0) === 0 && g.estime > 0 ? '<span class="tag tag-ok">✓ Soldé</span>' : '';
+    const noteTag = g.note ? `<span style="font-size:9px;color:var(--yellow);margin-left:6px;font-style:italic;">${g.note}</span>` : '';
     row.innerHTML = `
-      <div>${g.name}${g.type==='paris'?'<span class="tag tag-paris">Paris</span>':''}${solde}</div>
+      <div>${g.name}${g.type==='paris'?'<span class="tag tag-paris">Paris</span>':''}${solde}${noteTag}</div>
       <div class="right" style="color:var(--text-dim)">${g.estime>0?fmt(g.estime):'—'}</div>
       <div class="right"><input class="d-input" type="number" id="g-paye-${i}" value="${g.paye||0}" min="0" oninput="onPayeChange('g',${i},'paye',this.value)"></div>
       <div class="right"><input class="d-input" type="number" id="g-reste-${i}" value="${g.reste||0}" min="0" style="color:${(g.reste||0)>0?'var(--red)':'var(--green)'}" oninput="onPayeChange('g',${i},'reste',this.value)"></div>
@@ -638,7 +649,8 @@ window.recalc = function() {
   const promoTotal = promoSold * 50;
   const samTotal = samSold * s.sam.prix;
   const dimTotal = dimSold * s.dim.prix;
-  const totalRecettes = weTotal + promoTotal + samTotal + dimTotal;
+  const cashSurplace = v.cashSurplace || 0;
+  const totalRecettes = weTotal + promoTotal + samTotal + dimTotal + cashSurplace;
   document.getElementById('promo-total').textContent = fmt(promoTotal);
 
   (document.getElementById('we-total')||{textContent:''}).textContent = fmt(weTotal);
